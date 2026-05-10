@@ -7,62 +7,33 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#121212">
     <title>Milo盃 BEYBLADE X 邀請賽</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary: #00ffcc;
-            --secondary: #ff0055;
-            --tertiary: #cc00ff;
-            --quaternary: #ffaa00;
-            --gold: #ffd700;
-            --bg: #121212;
-            --panel: #1e1e24;
-            --text: #e0e0e0;
-            --border: #333;
-            
-            /* Scoreboard Colors */
-            --sb-p1-color: #00e5ff;
-            --sb-p2-color: #ff0055;
-            --sb-bg-color: #0a0a0c;
+            --primary: #00ffcc; --secondary: #ff0055; --tertiary: #cc00ff; --quaternary: #ffaa00; --gold: #ffd700;
+            --bg: #121212; --panel: #1e1e24; --text: #e0e0e0; --border: #333;
+            --sb-p1-color: #00e5ff; --sb-p2-color: #ff0055; --sb-bg-color: #0a0a0c;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 0;
-            min-height: 100dvh;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100dvh; }
 
         /* ================= 頂部導航列與專屬 UI ================= */
-        .top-bar {
-            background: rgba(0, 0, 0, 0.95); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 200; backdrop-filter: blur(10px);
-            padding: env(safe-area-inset-top) 10px 10px;
-        }
-
-        /* 分頁按鈕 */
-        .tab-btn {
-            padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; transition: all 0.2s; white-space: nowrap; cursor: pointer; border: 1px solid transparent; letter-spacing: 0.5px;
-        }
+        .top-bar { background: rgba(0, 0, 0, 0.95); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 200; backdrop-filter: blur(10px); padding: env(safe-area-inset-top) 10px 10px; }
+        .tab-btn { padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; transition: all 0.2s; white-space: nowrap; cursor: pointer; border: 1px solid transparent; letter-spacing: 0.5px; }
         .tab-active { background-color: var(--primary) !important; color: #000 !important; box-shadow: 0 0 15px rgba(0, 255, 204, 0.5); }
         .tab-inactive { background-color: #1f2937 !important; color: #9ca3af !important; border-color: #374151 !important; }
         .tab-inactive:hover { background-color: #374151 !important; color: #fff !important; }
 
-        /* 計分板按鈕 */
-        .action-btn { background-color: rgba(0, 255, 204, 0.15); color: var(--primary); border: 1px solid rgba(0, 255, 204, 0.5); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; margin: 0 4px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .action-btn { background-color: rgba(0, 255, 204, 0.15); color: var(--primary); border: 1px solid rgba(0, 255, 204, 0.5); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; margin: 0 4px; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
         .action-btn:hover { background-color: var(--primary); color: #000; }
 
         h1 { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); letter-spacing: 2px; }
         .panel { background: var(--panel); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        textarea, select, input[type="text"]:not(.sb-input), input[type="password"] {
-            background: #111; color: #fff; border: 1px solid #444; outline: none; transition: border-color 0.2s;
-        }
+        textarea, select, input[type="text"]:not(.sb-input), input[type="password"] { background: #111; color: #fff; border: 1px solid #444; outline: none; transition: border-color 0.2s; }
         textarea:focus, select:focus, input:focus { border-color: var(--primary); }
-        
         .btn-primary { background: var(--primary); color: #000; transition: all 0.2s; font-weight: bold;}
         .btn-primary:hover { background: #00cca3; transform: scale(0.98); }
 
@@ -71,17 +42,14 @@
         .score-ctrl { background: #333; color: white; width: 24px; height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; font-weight: bold; }
         .score-ctrl:active { background: #555; }
 
-        .match-row { background: rgba(0, 0, 0, 0.4); border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 8px; }
+        .match-row { background: rgba(0, 0, 0, 0.4); border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 8px; transition: all 0.3s; }
+        .match-row.completed { opacity: 0.6; border-color: #555; background: rgba(0,0,0,0.8); }
         .score-box { display: inline-block; min-width: 30px; height: 30px; line-height: 30px; text-align: center; background: rgba(255,255,255,0.05); border: 1px solid #555; border-radius: 4px; color: var(--gold); font-weight: bold; }
 
-        /* ================= 淘汰賽樹狀圖專屬 CSS ================= */
-        .bracket-tree {
-            display: flex; flex-direction: row; overflow-x: auto; gap: 2rem; padding: 1rem 0; align-items: stretch; scroll-behavior: smooth;
-        }
-        .bracket-col {
-            display: flex; flex-direction: column; justify-content: space-around; min-width: 280px; gap: 1.5rem;
-        }
-        .matchup { background: rgba(0,0,0,0.4); border: 1px solid #444; border-radius: 8px; overflow: hidden; position: relative; }
+        .bracket-tree { display: flex; flex-direction: row; overflow-x: auto; gap: 2rem; padding: 1rem 0; align-items: stretch; scroll-behavior: smooth; }
+        .bracket-col { display: flex; flex-direction: column; justify-content: space-around; min-width: 280px; gap: 1.5rem; }
+        .matchup { background: rgba(0,0,0,0.4); border: 1px solid #444; border-radius: 8px; overflow: hidden; position: relative; transition: all 0.3s; }
+        .matchup.completed { opacity: 0.6; border-color: #555; }
         .matchup-title { font-size: 0.8em; text-align: center; padding: 4px; background: #222; color: #888; border-bottom: 1px solid #444; }
         .matchup.gold { border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
         .matchup.gold .matchup-title { background: rgba(255, 215, 0, 0.1); color: var(--gold); }
@@ -89,6 +57,7 @@
 
         .pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 204, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); } }
+        .highlight-match { border: 2px solid var(--primary) !important; background-color: rgba(0, 255, 204, 0.15) !important; position: relative; z-index: 10; opacity: 1 !important; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -130,7 +99,7 @@
         .sb-winner-banner { font-size: clamp(3rem, 8vw, 7rem); font-weight: 900; margin-bottom: 10px; }
         .sb-p1-win .sb-winner-banner { color: var(--sb-p1-color); text-shadow: 0 0 30px var(--sb-p1-color); }
         .sb-p2-win .sb-winner-banner { color: var(--sb-p2-color); text-shadow: 0 0 30px var(--sb-p2-color); }
-        .sb-next-btn { background: transparent; border: 2px solid #fff; color: #fff; padding: 12px 40px; font-size: clamp(1.2rem, 3vw, 2rem); border-radius: 40px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        .sb-next-btn { background: transparent; border: 2px solid #fff; color: #fff; padding: 12px 40px; font-size: clamp(1.2rem, 3vw, 2rem); border-radius: 40px; cursor: pointer; transition: 0.2s; }
         .sb-next-btn:hover { background: #fff; color: #000; }
 
         @media (orientation: portrait) {
@@ -145,10 +114,10 @@
 </head>
 <body class="flex flex-col items-center">
 
+    <!-- ================= 頂部導航 ================= -->
     <div class="top-bar w-full flex justify-between items-center overflow-x-auto whitespace-nowrap">
         <div class="flex items-center gap-3">
             <div class="font-bold text-gray-400 text-sm tracking-wide hidden sm:block">Milo Cup</div>
-            
             <div id="nav-tabs" class="hidden flex gap-2">
                 <button onclick="switchTab('main')" id="tab-btn-main" class="tab-btn tab-active">🏆 賽程</button>
                 <button onclick="switchTab('score')" id="tab-btn-score" class="tab-btn tab-inactive">⚔️ 計分</button>
@@ -156,9 +125,9 @@
         </div>
 
         <div class="flex gap-2 items-center">
-            <button class="tab-btn" style="background: rgba(0,255,204,0.1); color: var(--primary); border: 1px solid var(--primary);" onclick="toggleFullScreen()" id="fs-btn">
-                🔲 全螢幕
-            </button>
+            <!-- 音效開關 -->
+            <button onclick="toggleSound()" id="sound-btn" class="tab-btn" style="background: rgba(255,255,255,0.1); border: 1px solid #555; color: #fff;" title="音效開關">🔊</button>
+            <button class="tab-btn" style="background: rgba(0,255,204,0.1); color: var(--primary); border: 1px solid var(--primary);" onclick="toggleFullScreen()" id="fs-btn">🔲 全螢幕</button>
             <div id="user-info" class="text-sm hidden items-center">
                 <span id="role-badge" class="px-2 py-1 rounded text-xs font-bold mr-2"></span>
                 <button onclick="logout()" class="text-gray-400 underline text-xs">切換</button>
@@ -166,6 +135,7 @@
         </div>
     </div>
 
+    <!-- ================= 1️⃣ 賽程表容器 (App Container) ================= -->
     <div id="app-container" class="w-full flex-1 flex-col items-center pb-20 overflow-y-auto" style="display: flex;">
         <div class="text-center my-6 px-2 w-full">
             <h1 class="text-3xl md:text-4xl font-black uppercase">🏆 Milo盃 BEYBLADE X</h1>
@@ -174,15 +144,18 @@
 
         <div id="loading-screen" class="w-full max-w-md p-8 text-center hidden"><div class="loader mb-4"></div><p>正在同步賽事資料...</p></div>
 
+        <!-- 登入選擇畫面 -->
         <div id="login-screen" class="w-full max-w-md p-6 panel rounded-2xl hidden mx-4">
             <h2 class="text-xl text-primary font-bold border-b-2 border-primary pb-2 mb-6">請選擇您的身分</h2>
-            <div class="mb-8">
-                <h3 class="text-gray-300 font-bold mb-3">👤 我是參賽選手</h3>
-                <select id="player-select" class="w-full p-3 rounded-lg mb-3"><option value="">-- 請選擇 --</option></select>
-                <button onclick="loginAsPlayer()" class="w-full btn-primary p-3 rounded-lg">進入選手儀表板</button>
+            <div class="mb-6">
+                <h3 class="text-gray-300 font-bold mb-3">👤 參賽選手 / 觀眾轉播</h3>
+                <select id="player-select" class="w-full p-3 rounded-lg mb-3">
+                    <option value="">-- 請選擇 --</option>
+                </select>
+                <button onclick="loginAsPlayer()" class="w-full btn-primary p-3 rounded-lg mb-2">進入專屬視角</button>
             </div>
             <div class="border-t border-gray-700 pt-6">
-                <h3 class="text-gray-300 font-bold mb-3">👑 我是主辦單位 (Admin)</h3>
+                <h3 class="text-gray-300 font-bold mb-3">👑 主辦單位 (Admin)</h3>
                 <button onclick="loginAsAdmin()" class="w-full bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 p-3 rounded-lg transition-colors">進入主控台</button>
             </div>
         </div>
@@ -208,13 +181,25 @@
         </div>
 
         <div id="main-board-screen" class="w-full max-w-6xl px-4 hidden">
+            <!-- 選手儀表板 -->
             <div id="player-dashboard" class="mb-8 panel border-primary rounded-xl p-4 hidden pulse">
                 <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🔥</span><h3 class="text-lg font-bold text-white">您的下一場賽事</h3></div>
                 <div id="next-match-content" class="bg-black/50 rounded-lg p-4 text-center border border-gray-700"></div>
             </div>
-            <div id="groups-container" class="flex flex-wrap gap-6 justify-center mb-10"></div>
             
-            <div id="knockout-section" class="panel rounded-xl p-6 w-full hidden overflow-hidden">
+            <div id="groups-container" class="flex flex-wrap gap-6 justify-center mb-6"></div>
+            
+            <!-- 自動匯入晉級區 (Admin) -->
+            <div id="auto-fill-section" class="w-full flex justify-center mb-10 hidden">
+                <div class="panel p-4 rounded-xl text-center border-purple-500 max-w-lg w-full">
+                    <p class="text-gray-400 text-sm mb-3">小組賽全數完賽後，點擊下方按鈕自動排定淘汰賽種子</p>
+                    <button onclick="autoFillKnockout()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-6 rounded-lg transition w-full shadow-[0_0_10px_rgba(147,51,234,0.5)]">
+                        ⏩ 自動匯入晉級名單
+                    </button>
+                </div>
+            </div>
+
+            <div id="knockout-section" class="panel rounded-xl p-6 w-full hidden overflow-hidden mb-10">
                 <h2 id="knockout-title" class="text-2xl text-gold border-b-2 border-gold pb-3 mb-6 text-center font-bold">🏆 決賽階段 - 終極淘汰賽</h2>
                 <div class="text-gray-400 text-xs text-center mb-4">👉 左右滑動以檢視完整賽程樹狀圖 👉</div>
                 <div id="knockout-container" class="bracket-tree"></div>
@@ -226,11 +211,12 @@
         </div>
     </div> 
 
+    <!-- ================= 2️⃣ 電子計分板容器 (Scoreboard) ================= -->
     <div id="scoreboard-screen" style="display: none;">
         <div class="sb-settings-bar">
             <span class="text-gray-400 font-bold text-sm tracking-widest hidden sm:inline">ELECTRONIC SCOREBOARD</span>
             <div class="flex gap-2">
-                <select id="sb-winCondition" onchange="checkSbWinner()">
+                <select id="sb-winCondition" onchange="changeSbTarget(this.value)">
                     <option value="4" selected>先得 4 分</option><option value="5">先得 5 分</option><option value="7">先得 7 分</option>
                 </select>
             </div>
@@ -238,7 +224,7 @@
 
         <div class="sb-main-arena">
             <div class="sb-side-panel sb-side-1">
-                <input type="text" class="sb-player-name sb-input" id="sb-name-1" value="PLAYER 1">
+                <input type="text" class="sb-player-name sb-input" id="sb-name-1" value="PLAYER 1" onchange="changeSbName(1, this.value)">
                 <div class="sb-action-buttons">
                     <button class="sb-btn sb-btn-extreme" onclick="addSbScore(1, 3)"><span class="sb-btn-title">極限擊殺 X-Dash</span><span class="sb-btn-points">+3</span></button>
                     <button class="sb-btn" onclick="addSbScore(1, 2)"><span class="sb-btn-title">擊爆 Burst</span><span class="sb-btn-points">+2</span></button>
@@ -257,7 +243,7 @@
             </div>
 
             <div class="sb-side-panel sb-side-2">
-                <input type="text" class="sb-player-name sb-input" id="sb-name-2" value="PLAYER 2" style="direction: rtl;">
+                <input type="text" class="sb-player-name sb-input" id="sb-name-2" value="PLAYER 2" style="direction: rtl;" onchange="changeSbName(2, this.value)">
                 <div class="sb-action-buttons">
                     <button class="sb-btn sb-btn-extreme" onclick="addSbScore(2, 3)"><span class="sb-btn-title">極限擊殺 X-Dash</span><span class="sb-btn-points">+3</span></button>
                     <button class="sb-btn" onclick="addSbScore(2, 2)"><span class="sb-btn-title">擊爆 Burst</span><span class="sb-btn-points">+2</span></button>
@@ -272,9 +258,9 @@
             <div class="sb-winner-banner">WINNER</div>
             <div id="sb-winner-name" style="font-size: clamp(1.8rem, 5vw, 4rem); color: #fff; margin-bottom: 20px; font-weight:bold; text-transform:uppercase;"></div>
             
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px;">
-                <button class="sb-next-btn" style="background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; width: 100%; max-width: 350px;" onclick="saveSbScoreAndReturn()">💾 儲存比分並返回賽程</button>
-                <button class="sb-next-btn" style="font-size: 1rem; padding: 12px 20px; border-color: #555; color: #aaa;" onclick="resetAllAndCloseSbVictory(); switchTab('main')">不儲存</button>
+            <div id="sb-admin-controls" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px;">
+                <button class="sb-next-btn" style="background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; width: 100%; max-width: 350px;" onclick="saveSbScoreAndReturn(true)">💾 儲存比分並標記完賽</button>
+                <button class="sb-next-btn" style="font-size: 1rem; padding: 12px 20px; border-color: #555; color: #aaa;" onclick="saveSbScoreAndReturn(false)">返回賽程 (不結算)</button>
             </div>
         </div>
     </div>
@@ -292,7 +278,7 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // 🚨 請在這裡貼上您專屬的 Firebase 金鑰！ 🚨
+        // 🚨 您專屬的 Firebase 金鑰！ 🚨
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyDdMAx7dk55c_6z3alQenCG-FTONk0TkPY",
@@ -301,7 +287,7 @@
             storageBucket: "milocup-live.firebasestorage.app",
             messagingSenderId: "988514415331",
             appId: "1:988514415331:web:de2f269acbc03b12070bd6"
-            };
+        };
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -312,15 +298,37 @@
         window.currentUser = null;
         window.userRole = localStorage.getItem(`role_${appId}`) || null;
         window.docRef = null;
-        
         window.currentTab = 'main'; 
-        window.currentMatchContext = null; 
-        
-        let sbScores = { 1: 0, 2: 0 };
-        let sbGameOver = false;
 
         const colors = [{ main: '#00ffcc', bg: 'rgba(0, 255, 204, 0.05)' }, { main: '#ff0055', bg: 'rgba(255, 0, 85, 0.05)' }, { main: '#cc00ff', bg: 'rgba(204, 0, 255, 0.05)' }, { main: '#ffaa00', bg: 'rgba(255, 170, 0, 0.05)' }];
         const groupLabels = ['A', 'B', 'C', 'D'];
+
+        // 🎵 音效系統 (Web Audio API - 絕對不失效)
+        window.soundEnabled = true;
+        let audioCtx = null;
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        
+        function playHitSound() {
+            if (!window.soundEnabled || !audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+        
+        function playWinSound() {
+            if (!window.soundEnabled || !audioCtx) return;
+            [440, 554, 659, 880].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, audioCtx.currentTime + i*0.1); gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + i*0.1 + 0.05); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i*0.1 + 1);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(audioCtx.currentTime + i*0.1); osc.stop(audioCtx.currentTime + i*0.1 + 1);
+            });
+        }
+
+        window.toggleSound = function() {
+            window.soundEnabled = !window.soundEnabled; document.getElementById('sound-btn').innerText = window.soundEnabled ? '🔊' : '🔇';
+        }
 
         async function init() {
             showCoreScreen('loading-screen');
@@ -341,6 +349,15 @@
                 if (snap.exists() && !snap.data().deleted) {
                     window.globalState = snap.data();
                     document.getElementById('system-status').innerText = '🟢 即時同步中'; document.getElementById('system-status').className = 'text-green-400 mt-2 text-sm';
+                    
+                    // 📺 觀眾模式：自動連動計分板切換
+                    if (window.userRole === 'spectator') {
+                        if (window.globalState.liveScoreboard && window.globalState.liveScoreboard.active) {
+                            if (window.currentTab !== 'score') switchTab('score');
+                        } else {
+                            if (window.currentTab !== 'main') switchTab('main');
+                        }
+                    }
                 } else {
                     window.globalState = null;
                     document.getElementById('system-status').innerText = '⚪ 尚未建立賽事'; document.getElementById('system-status').className = 'text-gray-400 mt-2 text-sm';
@@ -349,8 +366,7 @@
             }, (error) => { showModal("同步錯誤: " + error.message); });
         }
 
-        window.switchTab = function(tabName) { window.currentTab = tabName; syncTabsUI(); }
-
+        window.switchTab = function(tabName) { window.currentTab = tabName; syncTabsUI(); if(tabName === 'main') renderApp(); }
         function syncTabsUI() {
             const btnMain = document.getElementById('tab-btn-main'); const btnScore = document.getElementById('tab-btn-score');
             const appContainer = document.getElementById('app-container'); const scoreScreen = document.getElementById('scoreboard-screen');
@@ -362,6 +378,7 @@
             } else if (window.currentTab === 'score') {
                 btnScore.className = 'tab-btn tab-active'; btnMain.className = 'tab-btn tab-inactive';
                 appContainer.style.display = 'none'; scoreScreen.style.display = 'flex';
+                renderScoreboard(); // 確保重新繪製
             }
         }
 
@@ -371,9 +388,15 @@
         }
 
         window.loadMatchToScoreboard = function(p1, p2, matchType, idx1, idx2) {
-            document.getElementById('sb-name-1').value = p1 || 'PLAYER 1'; document.getElementById('sb-name-2').value = p2 || 'PLAYER 2';
-            window.currentMatchContext = { type: matchType, idx1: idx1, idx2: idx2 };
-            resetAllAndCloseSbVictory(); window.switchTab('score'); 
+            let s = JSON.parse(JSON.stringify(window.globalState));
+            let match = (matchType === 'g_m') ? s.groups[idx1].matches[idx2] : s.knockout[idx1].matches[idx2];
+            
+            s.liveScoreboard = {
+                active: true, p1: p1 || 'PLAYER 1', p2: p2 || 'PLAYER 2', s1: match.s1, s2: match.s2, target: 4,
+                context: { type: matchType, idx1: idx1, idx2: idx2 }
+            };
+            saveState(s);
+            window.switchTab('score'); 
         }
 
         function renderApp() {
@@ -386,8 +409,9 @@
                 else { renderMainBoard(); showCoreScreen('main-board-screen'); }
             } else {
                 if (!window.globalState) { window.userRole = null; localStorage.removeItem(`role_${appId}`); renderApp(); return; }
-                renderMainBoard(); showCoreScreen('main-board-screen');
+                if (window.currentTab === 'main') renderMainBoard(); showCoreScreen('main-board-screen');
             }
+            if (window.currentTab === 'score') renderScoreboard();
         }
 
         function updateTopBar() {
@@ -396,6 +420,8 @@
                 uiInfo.classList.remove('hidden'); uiInfo.classList.add('flex');
                 if (window.userRole === 'admin') { 
                     badge.innerText = '👑 主辦單位'; badge.style.backgroundColor = 'var(--primary)'; badge.style.color = '#000'; badge.className = 'px-2 py-1 rounded text-xs font-bold mr-2'; 
+                } else if (window.userRole === 'spectator') { 
+                    badge.innerText = '📺 轉播模式'; badge.style.backgroundColor = '#cc00ff'; badge.style.color = '#fff'; badge.className = 'px-2 py-1 rounded text-xs border border-gray-600 mr-2'; 
                 } else { 
                     badge.innerText = `👤 ${window.userRole}`; badge.style.backgroundColor = '#1f2937'; badge.style.color = '#fff'; badge.className = 'px-2 py-1 rounded text-xs border border-gray-600 mr-2'; 
                 }
@@ -426,23 +452,44 @@
             const select = document.getElementById('player-select');
             if (window.globalState && window.globalState.players) {
                 const realPlayers = window.globalState.players.filter(p => p !== '輪空');
-                select.innerHTML = '<option value="">-- 請選擇 --</option>' + realPlayers.map(p => `<option value="${p}">${p}</option>`).join(''); select.disabled = false;
+                select.innerHTML = '<option value="">-- 請選擇您的名字 --</option><option value="spectator" style="background:#cc00ff; color:#fff; font-weight:bold;">📺 現場轉播模式 (大螢幕/觀眾)</option>' + realPlayers.map(p => `<option value="${p}">${p}</option>`).join(''); select.disabled = false;
             } else { select.innerHTML = '<option value="">-- 賽事尚未建立 --</option>'; select.disabled = true; }
         }
-        window.loginAsAdmin = function() { window.userRole = 'admin'; localStorage.setItem(`role_${appId}`, 'admin'); renderApp(); }
-        window.loginAsPlayer = function() { const name = document.getElementById('player-select').value; if (!name) { showModal("請選擇一個名字！"); return; } window.userRole = name; localStorage.setItem(`role_${appId}`, name); renderApp(); }
+        window.loginAsAdmin = function() { initAudio(); window.userRole = 'admin'; localStorage.setItem(`role_${appId}`, 'admin'); renderApp(); }
+        window.loginAsPlayer = function() { initAudio(); const name = document.getElementById('player-select').value; if (!name) { showModal("請選擇一個名字！"); return; } window.userRole = name; localStorage.setItem(`role_${appId}`, name); renderApp(); }
         window.logout = function() { window.userRole = null; localStorage.removeItem(`role_${appId}`); window.currentTab = 'main'; showCoreScreen('login-screen'); renderApp(); }
 
-        // ==========================================
-        // 🔒 新增賽事生成防護與樹狀圖生成
-        // ==========================================
-        window.generateTournament = async function() {
-            // 🛡️ 密碼防護驗證
-            const pwd = document.getElementById('adminPassword').value;
-            if (pwd !== 'milocup') {
-                showModal("授權碼錯誤！您無權建立賽事。");
-                return;
+        function generateKnockoutStructure(numGroups) {
+            let cols = []; const createM = (id, title, p1Seed, p2Seed) => ({ id, title, p1: '', p2: '', s1: 0, s2: 0, p1Seed, p2Seed, isCompleted: false });
+            if (numGroups === 2) { cols.push({ title: 'Semi-Finals (四強)', matches: [ createM('sf1', '準決賽 A', 'A組 #1', 'B組 #2'), createM('sf2', '準決賽 B', 'B組 #1', 'A組 #2') ] }); } 
+            else if (numGroups === 3) { cols.push({ title: 'Round 1 (外卡)', matches: [ createM('r1_1', 'Match 1', '#4', '#5'), createM('r1_2', 'Match 2', '#3', '#6') ] }); cols.push({ title: 'Semi-Finals (準決賽)', matches: [ createM('sf1', '準決賽 A', '#1 (保送)', '勝 r1_1'), createM('sf2', '準決賽 B', '#2 (保送)', '勝 r1_2') ] }); } 
+            else if (numGroups === 4) { cols.push({ title: 'Quarter-Finals (八強)', matches: [ createM('qf1', '八強 A', 'A組 #1', 'B組 #2'), createM('qf2', '八強 B', 'C組 #1', 'D組 #2'), createM('qf3', '八強 C', 'B組 #1', 'A組 #2'), createM('qf4', '八強 D', 'D組 #1', 'C組 #2') ] }); cols.push({ title: 'Semi-Finals (準決賽)', matches: [ createM('sf1', '準決賽 1', '勝 qf1', '勝 qf2'), createM('sf2', '準決賽 2', '勝 qf3', '勝 qf4') ] }); }
+            cols.push({ title: 'Finals (決賽)', matches: [ { ...createM('f1', '🥇 冠軍戰', '勝 sf1', '勝 sf2'), isFinal: true }, { ...createM('f2', '🥉 季軍戰', '敗 sf1', '敗 sf2'), isBronze: true } ] }); return cols;
+        }
+
+        function generateSingleElimination(players) {
+            let cols = []; let numPlayers = players.length; let bracketSize = Math.pow(2, Math.ceil(Math.log2(numPlayers))); if (bracketSize < 2) bracketSize = 2;
+            let numRounds = Math.log2(bracketSize); let currentPlayers = [...players]; while(currentPlayers.length < bracketSize) currentPlayers.push('輪空'); currentPlayers.sort(() => Math.random() - 0.5); 
+            let roundTitles = [];
+            for(let i=0; i<numRounds; i++) {
+                let mCount = bracketSize / Math.pow(2, i + 1); if (mCount === 1) roundTitles.push('Finals (決賽)'); else if (mCount === 2) roundTitles.push('Semi-Finals (四強)'); else if (mCount === 4) roundTitles.push('Quarter-Finals (八強)'); else roundTitles.push(`Round ${i+1} (${mCount*2}強)`);
             }
+            let matchIdCounter = 1;
+            for(let r=0; r<numRounds; r++) {
+                let matchesInRound = bracketSize / Math.pow(2, r + 1); let roundMatches = [];
+                for(let m=0; m<matchesInRound; m++) {
+                    let isFinal = (r === numRounds - 1); let title = isFinal ? '🥇 冠軍戰' : `Match ${matchIdCounter}`; let p1 = '', p2 = '', p1Seed = '', p2Seed = '';
+                    if (r === 0) { p1 = currentPlayers[m*2]; p2 = currentPlayers[m*2 + 1]; p1Seed = `隨機排籤`; p2Seed = `隨機排籤`; } 
+                    else { let prevM1 = cols[r-1].matches[m*2].id; let prevM2 = cols[r-1].matches[m*2 + 1].id; p1Seed = `勝 ${prevM1}`; p2Seed = `勝 ${prevM2}`; }
+                    roundMatches.push({ id: `M${matchIdCounter}`, title: title, p1: p1, p2: p2, s1: 0, s2: 0, p1Seed: p1Seed, p2Seed: p2Seed, isFinal: isFinal, isCompleted: false }); matchIdCounter++;
+                } cols.push({ title: roundTitles[r], matches: roundMatches });
+                if (r === numRounds - 1) cols[r].matches.push({ id: `M${matchIdCounter}`, title: '🥉 季軍戰', p1: '', p2: '', s1: 0, s2: 0, p1Seed: `敗 M${matchIdCounter-2}`, p2Seed: `敗 M${matchIdCounter-1}`, isBronze: true, isCompleted: false });
+            } return cols;
+        }
+
+        window.generateTournament = async function() {
+            const pwd = document.getElementById('adminPassword').value;
+            if (pwd !== 'milocup') { showModal("授權碼錯誤！您無權建立賽事。"); return; }
 
             const text = document.getElementById('playerList').value; let players = text.split('\n').map(p => p.trim()).filter(p => p !== '');
             const format = document.getElementById('tournamentFormat').value; const numGroups = parseInt(document.getElementById('groupCount').value);
@@ -453,9 +500,7 @@
                 groupsData = Array.from({length: numGroups}, (_, i) => ({ id: i, name: groupLabels[i], players: [], matches: [] }));
                 players.forEach((p, index) => groupsData[index % numGroups].players.push({ name: p, w: 0, l: 0, pts: 0, rank: '-' }));
                 groupsData.forEach((g) => {
-                    let tempMatches = []; for (let i = 0; i < g.players.length; i++) for (let j = i + 1; j < g.players.length; j++) tempMatches.push({ p1: g.players[i].name, p2: g.players[j].name, s1: 0, s2: 0 });
-                    
-                    // 優化出賽間隔
+                    let tempMatches = []; for (let i = 0; i < g.players.length; i++) for (let j = i + 1; j < g.players.length; j++) tempMatches.push({ p1: g.players[i].name, p2: g.players[j].name, s1: 0, s2: 0, isCompleted: false });
                     if (tempMatches.length > 2) {
                         let arranged = []; let pLast = {}; arranged.push(tempMatches.shift()); pLast[arranged[0].p1] = 0; pLast[arranged[0].p2] = 0;
                         while (tempMatches.length > 0) {
@@ -465,53 +510,104 @@
                                 let score = Math.min(d1, d2); if (score > maxS) { maxS = score; bIdx = i; }
                             }
                             let nextM = tempMatches.splice(bIdx, 1)[0]; arranged.push(nextM); pLast[nextM.p1] = arranged.length - 1; pLast[nextM.p2] = arranged.length - 1;
-                        }
-                        tempMatches = arranged;
+                        } tempMatches = arranged;
                     }
-                    g.matches = tempMatches.map((m, idx) => ({ id: `g${g.id}_${idx+1}`, p1: m.p1, p2: m.p2, s1: 0, s2: 0 }));
+                    g.matches = tempMatches.map((m, idx) => ({ id: `g${g.id}_${idx+1}`, p1: m.p1, p2: m.p2, s1: 0, s2: 0, isCompleted: false }));
                 });
-                
-                // 預排小組賽樹狀圖
-                let cols = []; const createM = (id, title, p1Seed, p2Seed) => ({ id, title, p1: '', p2: '', s1: 0, s2: 0, p1Seed, p2Seed });
-                if (numGroups === 2) { cols.push({ title: 'Semi-Finals', matches: [ createM('sf1', '準決賽 A', 'A組 #1', 'B組 #2'), createM('sf2', '準決賽 B', 'B組 #1', 'A組 #2') ] }); } 
-                else if (numGroups === 3) { cols.push({ title: 'Round 1', matches: [ createM('r1_1', 'Match 1', '#4', '#5'), createM('r1_2', 'Match 2', '#3', '#6') ] }); cols.push({ title: 'Semi-Finals', matches: [ createM('sf1', '準決賽 A', '#1 (保送)', '勝 M1'), createM('sf2', '準決賽 B', '#2 (保送)', '勝 M2') ] }); } 
-                else if (numGroups === 4) { cols.push({ title: 'Quarter-Finals', matches: [ createM('qf1', '八強 A', 'A組 #1', 'B組 #2'), createM('qf2', '八強 B', 'C組 #1', 'D組 #2'), createM('qf3', '八強 C', 'B組 #1', 'A組 #2'), createM('qf4', '八強 D', 'D組 #1', 'C組 #2') ] }); cols.push({ title: 'Semi-Finals', matches: [ createM('sf1', '準決賽 1', '勝 八強A', '勝 八強B'), createM('sf2', '準決賽 2', '勝 八強C', '勝 八強D') ] }); }
-                cols.push({ title: 'Finals (決賽)', matches: [ { ...createM('f1', '🥇 冠軍戰', '晉級者 1', '晉級者 2'), isFinal: true }, { ...createM('f2', '🥉 季軍戰', '敗者 1', '敗者 2'), isBronze: true } ] }); 
-                knockoutData = cols;
-                
-            } else { 
-                // 單淘汰自動樹狀圖
-                let cols = []; let numPlayers = players.length; let bracketSize = Math.pow(2, Math.ceil(Math.log2(numPlayers))); if (bracketSize < 2) bracketSize = 2;
-                let numRounds = Math.log2(bracketSize); let currentPlayers = [...players]; while(currentPlayers.length < bracketSize) currentPlayers.push('輪空'); currentPlayers.sort(() => Math.random() - 0.5); 
-                let roundTitles = [];
-                for(let i=0; i<numRounds; i++) {
-                    let mCount = bracketSize / Math.pow(2, i + 1); if (mCount === 1) roundTitles.push('Finals (決賽)'); else if (mCount === 2) roundTitles.push('Semi-Finals (四強)'); else if (mCount === 4) roundTitles.push('Quarter-Finals (八強)'); else roundTitles.push(`Round ${i+1} (${mCount*2}強)`);
-                }
-                let matchIdCounter = 1;
-                for(let r=0; r<numRounds; r++) {
-                    let matchesInRound = bracketSize / Math.pow(2, r + 1); let roundMatches = [];
-                    for(let m=0; m<matchesInRound; m++) {
-                        let isFinal = (r === numRounds - 1); let title = isFinal ? '🥇 冠軍戰' : `Match ${matchIdCounter}`; let p1 = '', p2 = '', p1Seed = '', p2Seed = '';
-                        if (r === 0) { p1 = currentPlayers[m*2]; p2 = currentPlayers[m*2 + 1]; p1Seed = `隨機排籤`; p2Seed = `隨機排籤`; } 
-                        else { let prevM1 = cols[r-1].matches[m*2].id; let prevM2 = cols[r-1].matches[m*2 + 1].id; p1Seed = `勝 ${prevM1}`; p2Seed = `勝 ${prevM2}`; }
-                        roundMatches.push({ id: `M${matchIdCounter}`, title: title, p1: p1, p2: p2, s1: 0, s2: 0, p1Seed: p1Seed, p2Seed: p2Seed, isFinal: isFinal }); matchIdCounter++;
-                    } cols.push({ title: roundTitles[r], matches: roundMatches });
-                    if (r === numRounds - 1) cols[r].matches.push({ id: `M${matchIdCounter}`, title: '🥉 季軍戰', p1: '', p2: '', s1: 0, s2: 0, p1Seed: '敗 準決賽', p2Seed: '敗 準決賽', isBronze: true });
-                }
-                knockoutData = cols;
-            }
+                knockoutData = generateKnockoutStructure(numGroups);
+            } else { knockoutData = generateSingleElimination(players); }
             
-            const newState = { players: players, format: format, numGroups: format==='group'?numGroups:0, groups: groupsData, knockout: knockoutData };
+            const newState = { 
+                players: players, format: format, numGroups: format==='group'?numGroups:0, groups: groupsData, knockout: knockoutData,
+                liveScoreboard: { active: false, p1: '', p2: '', s1: 0, s2: 0, target: 4, context: null }
+            };
             try { await setDoc(window.docRef, newState); } catch (e) { showModal("發布失敗: " + e.message); }
         }
 
         // ==========================================
-        // 🌲 渲染主面板 (包含橫向樹狀圖)
+        // 👑 自動晉級與連動演算法
         // ==========================================
+        function advanceMatchWinner(s, match) {
+            if (!match.isCompleted) return;
+            let winner = match.s1 > match.s2 ? match.p1 : (match.s2 > match.s1 ? match.p2 : null);
+            let loser = match.s1 > match.s2 ? match.p2 : (match.s2 > match.s1 ? match.p1 : null);
+            if (!winner || !loser) return;
+
+            s.knockout.forEach(col => {
+                col.matches.forEach(m => {
+                    if (m.p1Seed === `勝 ${match.id}`) m.p1 = winner;
+                    if (m.p2Seed === `勝 ${match.id}`) m.p2 = winner;
+                    if (m.p1Seed === `敗 ${match.id}`) m.p1 = loser;
+                    if (m.p2Seed === `敗 ${match.id}`) m.p2 = loser;
+                });
+            });
+        }
+
+        window.autoFillKnockout = function() {
+            let s = JSON.parse(JSON.stringify(window.globalState));
+            s.groups.forEach((_, i) => recalcGroupStats(s, i)); // 確保名次最新
+            
+            let ranked = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+            s.groups.forEach((g) => { g.players.forEach(p => { let r = parseInt(p.rank); if (!isNaN(r)) { if(!ranked[r]) ranked[r] = []; ranked[r].push({ ...p, group: g.name }); } }); });
+            Object.keys(ranked).forEach(r => ranked[r].sort((a,b) => b.pts - a.pts || b.w - a.w));
+
+            let overallSeeds = [];
+            for (let r=1; r<=10; r++) { if (ranked[r]) overallSeeds.push(...ranked[r]); }
+
+            if (s.numGroups === 2) {
+                let a1 = ranked[1].find(p=>p.group==='A')?.name || ''; let a2 = ranked[2].find(p=>p.group==='A')?.name || '';
+                let b1 = ranked[1].find(p=>p.group==='B')?.name || ''; let b2 = ranked[2].find(p=>p.group==='B')?.name || '';
+                s.knockout[0].matches[0].p1 = a1; s.knockout[0].matches[0].p2 = b2;
+                s.knockout[0].matches[1].p1 = b1; s.knockout[0].matches[1].p2 = a2;
+            } else if (s.numGroups === 3) {
+                let s1=overallSeeds[0]?.name||'', s2=overallSeeds[1]?.name||'', s3=overallSeeds[2]?.name||'', s4=overallSeeds[3]?.name||'', s5=overallSeeds[4]?.name||'', s6=overallSeeds[5]?.name||'';
+                s.knockout[0].matches[0].p1 = s4; s.knockout[0].matches[0].p2 = s5;
+                s.knockout[0].matches[1].p1 = s3; s.knockout[0].matches[1].p2 = s6;
+                s.knockout[1].matches[0].p1 = s1; s.knockout[1].matches[1].p1 = s2;
+            } else if (s.numGroups === 4) {
+                let a1 = ranked[1].find(p=>p.group==='A')?.name || ''; let a2 = ranked[2].find(p=>p.group==='A')?.name || '';
+                let b1 = ranked[1].find(p=>p.group==='B')?.name || ''; let b2 = ranked[2].find(p=>p.group==='B')?.name || '';
+                let c1 = ranked[1].find(p=>p.group==='C')?.name || ''; let c2 = ranked[2].find(p=>p.group==='C')?.name || '';
+                let d1 = ranked[1].find(p=>p.group==='D')?.name || ''; let d2 = ranked[2].find(p=>p.group==='D')?.name || '';
+                s.knockout[0].matches[0].p1 = a1; s.knockout[0].matches[0].p2 = b2;
+                s.knockout[0].matches[1].p1 = c1; s.knockout[0].matches[1].p2 = d2;
+                s.knockout[0].matches[2].p1 = b1; s.knockout[0].matches[2].p2 = a2;
+                s.knockout[0].matches[3].p1 = d1; s.knockout[0].matches[3].p2 = c2;
+            }
+            saveState(s);
+            showModal("✅ 淘汰賽種子名單已成功匯入！");
+        }
+
+        window.toggleMatchComplete = function(type, idx1, idx2) {
+            let s = JSON.parse(JSON.stringify(window.globalState));
+            let m = type==='g_m' ? s.groups[idx1].matches[idx2] : s.knockout[idx1].matches[idx2];
+            m.isCompleted = !m.isCompleted;
+            if (m.isCompleted) {
+                if (type==='g_m') recalcGroupStats(s, idx1);
+                if (type==='k_m') advanceMatchWinner(s, m);
+            }
+            saveState(s);
+        }
+
         function renderMainBoard() {
-            const s = window.globalState; const isAdmin = window.userRole === 'admin'; const isKnockoutOnly = s.format === 'knockout';
-            if (!isAdmin) renderPlayerDashboard(s); else document.getElementById('player-dashboard').classList.add('hidden');
+            const s = window.globalState; const isAdmin = window.userRole === 'admin'; const isSpectator = window.userRole === 'spectator';
+            const isKnockoutOnly = s.format === 'knockout'; const pName = window.userRole;
+            let nextMatchId = null;
+
+            if (!isAdmin && !isSpectator && pName) {
+                if (s.format !== 'knockout' && s.groups) {
+                    for (let g of s.groups) { for (let m of g.matches) { if (!m.isCompleted && (m.p1 === pName || m.p2 === pName)) { nextMatchId = m.id; break; } } if(nextMatchId) break; }
+                }
+                if (!nextMatchId && s.knockout) {
+                    for (let col of s.knockout) { for (let m of col.matches) { if (!m.isCompleted && (m.p1 === pName || m.p2 === pName)) { nextMatchId = m.id; break; } } if(nextMatchId) break; }
+                }
+            }
+
+            if (!isAdmin && !isSpectator) renderPlayerDashboard(s, nextMatchId); else document.getElementById('player-dashboard').classList.add('hidden');
             const gContainer = document.getElementById('groups-container'); const kSection = document.getElementById('knockout-section'); const kTitle = document.getElementById('knockout-title');
+            
+            // Show auto-fill button for admins in group mode
+            document.getElementById('auto-fill-section').classList.toggle('hidden', !(isAdmin && s.format === 'group'));
 
             if (isKnockoutOnly) { gContainer.classList.add('hidden'); kTitle.innerText = "⚔️ 單淘汰賽 賽程表"; } 
             else {
@@ -530,24 +626,27 @@
                     `).join('');
 
                     let matchesHtml = g.matches.map((m, mIdx) => `
-                        <div class="match-row p-2 flex items-center justify-between">
+                        <div class="match-row p-2 flex items-center justify-between ${m.isCompleted ? 'completed' : (m.id === nextMatchId ? 'highlight-match pulse' : '')}">
                             <div class="flex-1 text-right truncate pr-2 ${m.p1===window.userRole ? 'text-primary font-bold':''}">${m.p1}</div>
                             <div class="flex items-center gap-1 sm:gap-2">
                                 ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's1', -1)">-</button>` : ''}
                                 <span class="score-box">${m.s1}</span>
                                 ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's1', 1)">+</button>` : ''}
                                 
-                                ${isAdmin ? `<button class="action-btn mx-1" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}', 'g_m', ${idx}, ${mIdx})" title="將選手載入電子計分板">⚔️</button>` : `<span class="text-gray-500 text-xs mx-1">VS</span>`}
+                                ${isAdmin && !m.isCompleted ? `<button class="action-btn mx-1" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}', 'g_m', ${idx}, ${mIdx})" title="帶入電子計分板">⚔️</button>` : `<span class="text-gray-500 text-xs mx-1">VS</span>`}
                                 
                                 ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's2', -1)">-</button>` : ''}
                                 <span class="score-box">${m.s2}</span>
                                 ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's2', 1)">+</button>` : ''}
+                                
+                                <!-- 完賽標記區 -->
+                                ${isAdmin ? `<button class="mx-1 hover:scale-110 transition text-sm" onclick="toggleMatchComplete('g_m', ${idx}, ${mIdx})" title="標記/取消完賽">${m.isCompleted ? '✅' : '⬜'}</button>` : (m.isCompleted ? `<span class="text-xs bg-gray-700 text-gray-400 px-1 rounded ml-1">完賽</span>` : '')}
                             </div>
                             <div class="flex-1 text-left truncate pl-2 ${m.p2===window.userRole ? 'text-primary font-bold':''}">${m.p2}</div>
                         </div>
                     `).join('');
 
-                    gHtml += `<div class="panel p-4 rounded-xl flex-1 min-w-[320px] max-w-[500px]"><h2 class="flex justify-between items-center text-lg font-bold border-b-2 pb-2 mb-3" style="color:${c.main}; border-color:${c.main};"><span>${g.name}組 預賽</span><span class="text-xs bg-white/10 px-2 py-1 rounded text-gray-300">${g.players.length}人</span></h2><div class="overflow-x-auto mb-4"><table class="text-sm"><tr><th style="background:${c.bg}; color:${c.main};">代號</th><th style="background:${c.bg}; color:${c.main};">選手</th><th style="background:${c.bg}; color:${c.main};">勝</th><th style="background:${c.bg}; color:${c.main};">敗</th><th style="background:${c.bg}; color:${c.main};">積分</th><th style="background:${c.bg}; color:${c.main};">名次</th></tr>${tableRows}</table></div><div class="text-center text-gray-400 text-xs mb-2 border-b border-dashed border-gray-700 pb-1">⚔️ 對戰紀錄</div>${matchesHtml}</div>`;
+                    gHtml += `<div class="panel p-4 rounded-xl flex-1 min-w-[320px] max-w-[500px]"><h2 class="flex justify-between items-center text-lg font-bold border-b-2 pb-2 mb-3" style="color:${c.main}; border-color:${c.main};"><div class="flex items-center gap-2"><span>${g.name}組 預賽</span>${isAdmin ? `<button class="text-xs bg-gray-800 text-gray-300 border border-gray-600 px-2 py-1 rounded hover:bg-gray-700 transition flex items-center gap-1" onclick="forceRecalc(${idx})" title="根據對戰紀錄重新計算成績">🔄 結算</button>` : ''}</div><span class="text-xs bg-white/10 px-2 py-1 rounded text-gray-300">${g.players.length}人</span></h2><div class="overflow-x-auto mb-4"><table class="text-sm"><tr><th style="background:${c.bg}; color:${c.main};">代號</th><th style="background:${c.bg}; color:${c.main};">選手</th><th style="background:${c.bg}; color:${c.main};">勝</th><th style="background:${c.bg}; color:${c.main};">敗</th><th style="background:${c.bg}; color:${c.main};">積分</th><th style="background:${c.bg}; color:${c.main};">名次</th></tr>${tableRows}</table></div><div class="text-center text-gray-400 text-xs mb-2 border-b border-dashed border-gray-700 pb-1">⚔️ 對戰紀錄</div>${matchesHtml}</div>`;
                 });
                 gContainer.innerHTML = gHtml;
             }
@@ -555,10 +654,12 @@
             if (s.knockout) {
                 kSection.classList.remove('hidden'); 
                 
-                // 渲染為橫向樹狀圖 (Tree)
                 let kHtml = s.knockout.map((col, colIdx) => {
                     let matchesHtml = col.matches.map((m, mIdx) => {
                         let styleClass = m.isFinal ? 'gold' : (m.isBronze ? 'bronze border-amber-700' : '');
+                        if (m.isCompleted) styleClass += ' completed';
+                        else if (m.id === nextMatchId) styleClass += ' highlight-match pulse';
+                        
                         const renderPlayerRow = (pKey, sKey, seed) => `
                             <div class="flex justify-between items-center p-2 border-b border-gray-800 last:border-0">
                                 <div class="flex items-center flex-1 overflow-hidden">
@@ -575,8 +676,11 @@
                         return `
                             <div class="matchup ${styleClass}">
                                 <div class="matchup-title flex justify-between px-2 items-center">
-                                    <span>${m.title} ${m.id ? `<span class="text-gray-500">(${m.id})</span>`:''}</span>
-                                    ${isAdmin && m.p1 !== '輪空' && m.p2 !== '輪空' ? `<button class="action-btn" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}', 'k_m', ${colIdx}, ${mIdx})">⚔️ 計分</button>` : ''}
+                                    <span>${m.title} ${m.id ? `<span class="text-gray-500">(${m.id})</span>`:''} ${m.isCompleted && !isAdmin ? '<span class="text-green-400 ml-1">✅</span>' : ''}</span>
+                                    <div class="flex items-center gap-1">
+                                        ${isAdmin && !m.isCompleted && m.p1 !== '輪空' && m.p2 !== '輪空' ? `<button class="action-btn" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}', 'k_m', ${colIdx}, ${mIdx})">⚔️ 計分</button>` : ''}
+                                        ${isAdmin ? `<button class="hover:scale-110 transition text-sm ml-1" onclick="toggleMatchComplete('k_m', ${colIdx}, ${mIdx})" title="標記/取消完賽">${m.isCompleted ? '✅' : '⬜'}</button>` : ''}
+                                    </div>
                                 </div>
                                 ${renderPlayerRow('p1', 's1', m.p1Seed)}${renderPlayerRow('p2', 's2', m.p2Seed)}
                             </div>`;
@@ -588,14 +692,14 @@
             if (isAdmin) document.getElementById('admin-controls').classList.remove('hidden'); else document.getElementById('admin-controls').classList.add('hidden');
         }
 
-        function renderPlayerDashboard(s) {
+        function renderPlayerDashboard(s, nextMatchId) {
             const dash = document.getElementById('player-dashboard'); const content = document.getElementById('next-match-content'); const pName = window.userRole;
             let nextMatch = null; let matchType = '';
             if (s.format !== 'knockout' && s.groups) {
-                for (let g of s.groups) { for (let m of g.matches) { if ((m.p1 === pName || m.p2 === pName) && m.s1 === 0 && m.s2 === 0) { nextMatch = m; matchType = `${g.name}組 預賽`; break; } } if(nextMatch) break; }
+                for (let g of s.groups) { for (let m of g.matches) { if (m.id === nextMatchId) { nextMatch = m; matchType = `${g.name}組 預賽`; break; } } if(nextMatch) break; }
             }
             if (!nextMatch && s.knockout) {
-                for (let col of s.knockout) { for (let m of col.matches) { if ((m.p1 === pName || m.p2 === pName) && m.s1 === 0 && m.s2 === 0) { nextMatch = m; matchType = m.title; break; } } if(nextMatch) break; }
+                for (let col of s.knockout) { for (let m of col.matches) { if (m.id === nextMatchId) { nextMatch = m; matchType = m.title; break; } } if(nextMatch) break; }
             }
             dash.classList.remove('hidden');
             if (nextMatch) {
@@ -607,30 +711,50 @@
 
         window.updateScoreState = function(type, idx1, idx2, key, val) {
             let s = JSON.parse(JSON.stringify(window.globalState));
-            if (type === 'g_m') s.groups[idx1].matches[idx2][key] = Math.max(0, s.groups[idx1].matches[idx2][key] + val);
+            if (type === 'g_m') { s.groups[idx1].matches[idx2][key] = Math.max(0, s.groups[idx1].matches[idx2][key] + val); recalcGroupStats(s, idx1); }
             else if (type === 'k_m') s.knockout[idx1].matches[idx2][key] = Math.max(0, s.knockout[idx1].matches[idx2][key] + val);
-            else if (type === 'g_p') s.groups[idx1].players[idx2][key] = Math.max(0, s.groups[idx1].players[idx2][key] + val);
-            else if (type === 'g_r') s.groups[idx1].players[idx2][key] = val;
+            else if (type === 'g_p') s.groups[idx1].players[idx2][key] = Math.max(0, s.groups[idx1].players[idx2][key] + val); 
+            else if (type === 'g_r') s.groups[idx1].players[idx2][key] = val; 
             else if (type === 'k_n') s.knockout[idx1].matches[idx2][key] = val;
             saveState(s);
+        }
+
+        function recalcGroupStats(state, gIdx) {
+            let group = state.groups[gIdx];
+            group.players.forEach(p => { p.w = 0; p.l = 0; p.pts = 0; });
+            group.matches.forEach(m => {
+                if (!m.isCompleted) return; // 只計算已完賽的
+                let p1Idx = group.players.findIndex(p => p.name === m.p1); let p2Idx = group.players.findIndex(p => p.name === m.p2);
+                if (p1Idx !== -1 && p2Idx !== -1) {
+                    group.players[p1Idx].pts += m.s1; group.players[p2Idx].pts += m.s2;
+                    if (m.s1 > m.s2) { group.players[p1Idx].w += 1; group.players[p2Idx].l += 1; }
+                    else if (m.s2 > m.s1) { group.players[p2Idx].w += 1; group.players[p1Idx].l += 1; }
+                }
+            });
+            let playersWithScore = group.players.map((p, i) => ({ w: p.w, pts: p.pts, origIdx: i }));
+            playersWithScore.sort((a, b) => { if (b.w !== a.w) return b.w - a.w; return b.pts - a.pts; });
+            let currentRank = 1;
+            for (let i = 0; i < playersWithScore.length; i++) {
+                if (i > 0 && playersWithScore[i].w === playersWithScore[i-1].w && playersWithScore[i].pts === playersWithScore[i-1].pts) {
+                    group.players[playersWithScore[i].origIdx].rank = currentRank.toString();
+                } else {
+                    currentRank = i + 1; group.players[playersWithScore[i].origIdx].rank = currentRank.toString();
+                }
+            }
+        }
+
+        window.forceRecalc = function(gIdx) {
+            if (!window.globalState) return; let s = JSON.parse(JSON.stringify(window.globalState)); recalcGroupStats(s, gIdx); saveState(s);
         }
 
         async function saveState(newState) { try { await setDoc(window.docRef, newState); } catch (e) { showModal("更新失敗"); } }
         
         window.resetTournament = function() {
-            // 🛡️ 重置賽事的密碼防護 (使用原生 Prompt 阻擋惡意點擊)
             const pwd = prompt("請輸入主辦單位密碼以刪除並重置賽事：");
-            if (pwd !== 'milocup') {
-                if (pwd !== null) showModal("密碼錯誤！賽事未刪除。");
-                return;
-            }
-
+            if (pwd !== 'milocup') { if (pwd !== null) showModal("密碼錯誤！賽事未刪除。"); return; }
             document.getElementById('modal-msg').innerText = "即將刪除整個賽事，所有紀錄將會消失且無法復原！確定嗎？";
             const btn = document.querySelector('#custom-modal button'); btn.innerText = "最後確定刪除";
-            btn.onclick = async () => {
-                closeModal(); showCoreScreen('loading-screen');
-                try { await setDoc(window.docRef, { deleted: true }); window.location.reload(); } catch(e) { showModal("重置失敗"); }
-            };
+            btn.onclick = async () => { closeModal(); showCoreScreen('loading-screen'); try { await setDoc(window.docRef, { deleted: true }); window.location.reload(); } catch(e) { showModal("重置失敗"); } };
             document.getElementById('custom-modal').classList.remove('hidden');
         }
 
@@ -638,51 +762,85 @@
         window.closeModal = function() { document.getElementById('custom-modal').classList.add('hidden'); }
 
         // ==========================================
-        // 💾 計分板連動與資料寫回邏輯
+        // 📊 電子計分板 (完全從雲端狀態驅動)
         // ==========================================
-        window.addSbScore = function(p, pts) {
-            if (sbGameOver && pts > 0) return;
-            sbScores[p] = Math.max(0, sbScores[p] + pts);
-            let scoreEl = document.getElementById(`sb-score-${p}`);
-            scoreEl.innerText = sbScores[p];
-            scoreEl.classList.remove('bump'); void scoreEl.offsetWidth; scoreEl.classList.add('bump');
-            if (pts > 0) checkSbWinner();
-        }
+        let prevLiveS1 = 0, prevLiveS2 = 0, prevLiveWin = false;
 
-        window.resetSbPlayer = function(p) { sbScores[p] = 0; document.getElementById(`sb-score-${p}`).innerText = "0"; }
+        function renderScoreboard() {
+            const ls = window.globalState?.liveScoreboard;
+            if (!ls) return;
 
-        window.resetAllAndCloseSbVictory = function() {
-            sbScores = { 1: 0, 2: 0 };
-            document.getElementById('sb-score-1').innerText = "0"; document.getElementById('sb-score-2').innerText = "0";
-            document.getElementById('sb-victory-screen').classList.remove('active', 'sb-p1-win', 'sb-p2-win');
-            sbGameOver = false;
-        }
+            document.getElementById('sb-name-1').value = ls.p1 || '';
+            document.getElementById('sb-name-2').value = ls.p2 || '';
+            document.getElementById('sb-winCondition').value = ls.target;
+            
+            const s1El = document.getElementById('sb-score-1');
+            const s2El = document.getElementById('sb-score-2');
 
-        window.checkSbWinner = function() {
-            let target = parseInt(document.getElementById('sb-winCondition').value);
+            // 🎵 偵測分數增加並播放音效
+            if (ls.s1 > prevLiveS1 || ls.s2 > prevLiveS2) {
+                playHitSound();
+                if (ls.s1 > prevLiveS1) { s1El.classList.remove('bump'); void s1El.offsetWidth; s1El.classList.add('bump'); }
+                if (ls.s2 > prevLiveS2) { s2El.classList.remove('bump'); void s2El.offsetWidth; s2El.classList.add('bump'); }
+            }
+            prevLiveS1 = ls.s1; prevLiveS2 = ls.s2;
+            s1El.innerText = ls.s1; s2El.innerText = ls.s2;
+
             let screen = document.getElementById('sb-victory-screen');
-            if (sbScores[1] >= target) {
-                sbGameOver = true; document.getElementById('sb-winner-name').innerText = document.getElementById('sb-name-1').value; screen.classList.add('active', 'sb-p1-win');
-            } else if (sbScores[2] >= target) {
-                sbGameOver = true; document.getElementById('sb-winner-name').innerText = document.getElementById('sb-name-2').value; screen.classList.add('active', 'sb-p2-win');
+            if (ls.s1 >= ls.target || ls.s2 >= ls.target) {
+                if (!prevLiveWin) { playWinSound(); prevLiveWin = true; }
+                screen.classList.add('active', ls.s1 >= ls.target ? 'sb-p1-win' : 'sb-p2-win');
+                document.getElementById('sb-winner-name').innerText = ls.s1 >= ls.target ? ls.p1 : ls.p2;
+            } else {
+                screen.classList.remove('active', 'sb-p1-win', 'sb-p2-win');
+                prevLiveWin = false;
             }
+
+            // 權限控制
+            const isAdm = window.userRole === 'admin';
+            document.querySelectorAll('.sb-btn, .sb-btn-util, .sb-settings-bar select').forEach(el => el.style.display = isAdm ? '' : 'none');
+            document.querySelectorAll('.sb-input').forEach(el => el.readOnly = !isAdm);
+            document.getElementById('sb-admin-controls').style.display = isAdm ? 'flex' : 'none';
         }
 
-        window.saveSbScoreAndReturn = function() {
-            if (window.currentMatchContext && window.globalState) {
-                let s = JSON.parse(JSON.stringify(window.globalState));
-                let { type, idx1, idx2 } = window.currentMatchContext;
+        window.addSbScore = function(p, pts) {
+            if (window.userRole !== 'admin' || !window.globalState?.liveScoreboard) return;
+            let s = JSON.parse(JSON.stringify(window.globalState));
+            if (s.liveScoreboard.s1 >= s.liveScoreboard.target || s.liveScoreboard.s2 >= s.liveScoreboard.target) { if (pts > 0) return; } // Game over block
+            s.liveScoreboard[`s${p}`] = Math.max(0, s.liveScoreboard[`s${p}`] + pts);
+            saveState(s);
+        }
 
-                if (type === 'g_m') {
-                    s.groups[idx1].matches[idx2].s1 = sbScores[1];
-                    s.groups[idx1].matches[idx2].s2 = sbScores[2];
-                } else if (type === 'k_m') {
-                    s.knockout[idx1].matches[idx2].s1 = sbScores[1];
-                    s.knockout[idx1].matches[idx2].s2 = sbScores[2];
-                }
-                saveState(s);
+        window.resetSbPlayer = function(p) {
+            if (window.userRole !== 'admin') return;
+            let s = JSON.parse(JSON.stringify(window.globalState)); s.liveScoreboard[`s${p}`] = 0; saveState(s);
+        }
+
+        window.changeSbTarget = function(val) {
+            if (window.userRole !== 'admin') return;
+            let s = JSON.parse(JSON.stringify(window.globalState)); s.liveScoreboard.target = parseInt(val); saveState(s);
+        }
+        window.changeSbName = function(p, val) {
+            if (window.userRole !== 'admin') return;
+            let s = JSON.parse(JSON.stringify(window.globalState)); s.liveScoreboard[`p${p}`] = val; saveState(s);
+        }
+
+        window.saveSbScoreAndReturn = function(markComplete = false) {
+            if (window.userRole !== 'admin' || !window.globalState?.liveScoreboard?.context) return;
+            let s = JSON.parse(JSON.stringify(window.globalState));
+            let { type, idx1, idx2 } = s.liveScoreboard.context;
+            let match = (type === 'g_m') ? s.groups[idx1].matches[idx2] : s.knockout[idx1].matches[idx2];
+            
+            match.s1 = s.liveScoreboard.s1; match.s2 = s.liveScoreboard.s2;
+            match.p1 = s.liveScoreboard.p1; match.p2 = s.liveScoreboard.p2;
+
+            if (markComplete) {
+                match.isCompleted = true;
+                if (type === 'g_m') recalcGroupStats(s, idx1);
+                if (type === 'k_m') advanceMatchWinner(s, match);
             }
-            resetAllAndCloseSbVictory();
+            s.liveScoreboard.active = false;
+            saveState(s);
             window.switchTab('main');
         }
 
