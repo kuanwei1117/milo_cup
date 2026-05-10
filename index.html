@@ -160,7 +160,6 @@
             </div>
         </div>
 
-        <!-- 建立新賽事設定 -->
         <div id="setup-screen" class="w-full max-w-2xl p-6 panel rounded-2xl hidden mx-4">
             <h2 class="text-xl text-primary font-bold border-b-2 border-primary pb-2 mb-6">⚙️ 建立新賽事</h2>
             <div class="flex flex-col gap-2 mb-6"><label class="text-gray-300 font-bold">1. 參賽選手名單</label><textarea id="playerList" class="p-4 rounded-lg h-40" placeholder="選手A&#10;選手B"></textarea></div>
@@ -188,9 +187,9 @@
                 <div id="next-match-content" class="bg-black/50 rounded-lg p-4 text-center border border-gray-700"></div>
             </div>
 
-            <!-- 📺 觀眾多視角轉播區 (動態隱藏/顯示) -->
+            <!-- 📺 觀眾多視角轉播區 (修正：分割畫面顯示在這裡) -->
             <div id="spectator-multi-view" class="w-full flex-1 p-2 gap-4 flex-wrap justify-center content-center rounded-2xl hidden mb-10">
-                <!-- 動態注入多個計分板 -->
+                <!-- 動態注入 -->
             </div>
             
             <div id="main-board-content" class="w-full flex flex-col items-center">
@@ -222,6 +221,7 @@
     <!-- ================= 2️⃣ 電子計分板容器 ================= -->
     <div id="scoreboard-screen" style="display: none;">
         <div class="sb-settings-bar">
+            <!-- 🏆 顯示目前賽事名稱 -->
             <span id="sb-match-title" class="text-gold font-bold text-sm sm:text-lg tracking-widest drop-shadow-md truncate">ELECTRONIC SCOREBOARD</span>
             <div class="flex gap-2">
                 <select id="sb-winCondition" onchange="window.changeSbTarget(this.value)">
@@ -304,6 +304,7 @@
         const db = getFirestore(app);
         const appId = 'milo-cup-live'; 
 
+        // 全域變數
         window.globalState = null;
         window.currentUser = null;
         window.userRole = localStorage.getItem(`role_${appId}`) || null;
@@ -381,11 +382,6 @@
                 if (snap.exists() && !snap.data().deleted) {
                     window.globalState = snap.data();
                     document.getElementById('system-status').innerText = '🟢 即時同步中'; document.getElementById('system-status').className = 'text-green-400 mt-2 text-sm';
-                    
-                    // 📺 觀眾模式：不要強制跳轉 tab，讓 renderSpectatorView 去控制隱藏/顯示
-                    if (window.userRole === 'spectator') {
-                        if (window.currentTab !== 'main') window.switchTab('main');
-                    }
                 } else {
                     window.globalState = null;
                     document.getElementById('system-status').innerText = '⚪ 尚未建立賽事'; document.getElementById('system-status').className = 'text-gray-400 mt-2 text-sm';
@@ -436,6 +432,7 @@
             let s = window.globalState;
             let match = (matchType === 'g_m') ? s.groups[idx1].matches[idx2] : s.knockout[idx1].matches[idx2];
             
+            // 👉 自動產出比賽名稱標題
             let matchTitle = '進行中賽事';
             if (matchType === 'g_m') matchTitle = `${s.groups[idx1].name}組 預賽`;
             else if (matchType === 'k_m') matchTitle = match.title;
@@ -454,7 +451,7 @@
                     active: true, p1: p1 || 'PLAYER 1', p2: p2 || 'PLAYER 2', 
                     s1: match.s1 || 0, s2: match.s2 || 0, target: parseInt(document.getElementById('sb-winCondition').value) || 4,
                     context: { type: matchType, idx1: idx1, idx2: idx2 },
-                    matchTitle: matchTitle
+                    matchTitle: matchTitle // 🌟 將標題同步到雲端給觀眾看
                 };
             });
 
@@ -585,7 +582,7 @@
                 players: players, format: format, numGroups: format==='group'?numGroups:0, groups: groupsData, knockout: knockoutData,
                 liveScoreboards: {} // 多頻道支援
             };
-            try { await setDoc(window.docRef, newState); } catch (e) { window.showModal("發布失敗: " + e.message); }
+            try { await setDoc(docRef, newState); } catch (e) { window.showModal("發布失敗: " + e.message); }
         }
 
         // ==========================================
@@ -670,6 +667,7 @@
                 return;
             }
 
+            // 🌟 多頻道過濾：找出雲端上所有目前處於「active」狀態的裁判計分板
             const liveBoards = s.liveScoreboards ? Object.values(s.liveScoreboards).filter(b => b.active) : [];
 
             if (liveBoards.length > 0) {
@@ -681,6 +679,7 @@
                     currentTotal += (b.s1 + b.s2);
                     html += `
                     <div class="flex-1 min-w-[300px] max-w-[800px] bg-[#0a0a0c] border-2 border-[#333] rounded-2xl flex flex-col p-4 md:p-8 shadow-2xl relative">
+                        <!-- 顯示比賽標題名稱 -->
                         <div class="text-center text-gold font-bold text-sm md:text-xl tracking-widest mb-4 bg-[#222] py-1 px-4 rounded-full self-center border border-[#444] shadow-md">${b.matchTitle || '進行中賽事'}</div>
                         <div class="flex justify-between items-center flex-1 gap-4">
                             <div class="flex flex-col items-center flex-1 overflow-hidden">
@@ -900,18 +899,19 @@
         window.closeModal = function() { document.getElementById('custom-modal').classList.add('hidden'); }
 
         // ==========================================
-        // 📊 電子計分板 (支援樂觀渲染零延遲)
+        // 📊 電子計分板 (支援樂觀渲染與標題同步)
         // ==========================================
         window.renderScoreboard = function() {
             const uid = window.currentUser.uid;
             const ls = window.globalState?.liveScoreboards?.[uid];
             if (!ls) return;
 
+            // 🏆 顯示目前比賽標題
             document.getElementById('sb-match-title').innerText = ls.matchTitle || 'ELECTRONIC SCOREBOARD'; 
             document.getElementById('sb-name-1').value = ls.p1 || ''; document.getElementById('sb-name-2').value = ls.p2 || ''; document.getElementById('sb-winCondition').value = ls.target;
             const s1El = document.getElementById('sb-score-1'); const s2El = document.getElementById('sb-score-2');
 
-            // 確保本地狀態與雲端狀態一致 (避免自己發出的樂觀更新被雲端舊資料覆蓋)
+            // 確保本地狀態與雲端狀態一致
             if (ls.s1 > window.sbScores[1]) window.sbScores[1] = ls.s1;
             if (ls.s2 > window.sbScores[2]) window.sbScores[2] = ls.s2;
             
@@ -958,7 +958,7 @@
             let target = parseInt(document.getElementById('sb-winCondition').value) || 4;
             if (pts > 0 && (window.sbScores[1] >= target || window.sbScores[2] >= target)) return;
 
-            // 🚀 樂觀渲染 (Optimistic UI) - 讓計分板按鈕反應零延遲！
+            // 🚀 樂觀渲染
             window.sbScores[p] = Math.max(0, window.sbScores[p] + pts);
             let scoreEl = document.getElementById(`sb-score-${p}`);
             scoreEl.innerText = window.sbScores[p];
@@ -966,14 +966,13 @@
             if (pts > 0) window.playHitSound();
             window.checkSbWinner({target: target}); 
 
-            // 🌟 樂觀更新賽程表 (讓切換回主畫面時立刻看到分數)
             if (window.globalState && window.currentMatchContext) {
                 let { type, idx1, idx2 } = window.currentMatchContext;
                 let match = (type === 'g_m') ? window.globalState.groups[idx1].matches[idx2] : window.globalState.knockout[idx1].matches[idx2];
                 match[`s${p}`] = window.sbScores[p];
             }
 
-            // 同步寫入雲端 (包含轉播頻道與賽程表即時同步)
+            // 同步寫入雲端 (Transaction 防止蓋台)
             window.runDbTransaction((state) => {
                 if (state.liveScoreboards && state.liveScoreboards[uid]) {
                     let stTarget = state.liveScoreboards[uid].target;
@@ -983,7 +982,7 @@
                 if (window.currentMatchContext) {
                     let { type, idx1, idx2 } = window.currentMatchContext;
                     let match = (type === 'g_m') ? state.groups[idx1].matches[idx2] : state.knockout[idx1].matches[idx2];
-                    match[`s${p}`] = window.sbScores[p]; // 🌟 即時將分數寫回賽程！
+                    match[`s${p}`] = window.sbScores[p]; 
                 }
             });
         }
@@ -991,16 +990,7 @@
         window.resetSbPlayer = function(p) {
             if (window.userRole !== 'admin') return;
             const uid = window.currentUser.uid; 
-            
-            // 樂觀更新
-            window.sbScores[p] = 0;
-            document.getElementById(`sb-score-${p}`).innerText = "0";
-            if (window.globalState && window.currentMatchContext) {
-                let { type, idx1, idx2 } = window.currentMatchContext;
-                let match = (type === 'g_m') ? window.globalState.groups[idx1].matches[idx2] : window.globalState.knockout[idx1].matches[idx2];
-                match[`s${p}`] = 0;
-            }
-
+            window.sbScores[p] = 0; document.getElementById(`sb-score-${p}`).innerText = "0";
             window.runDbTransaction((state) => { 
                 if (state.liveScoreboards && state.liveScoreboards[uid]) state.liveScoreboards[uid][`s${p}`] = 0; 
                 if (window.currentMatchContext) {
@@ -1014,14 +1004,6 @@
         window.changeSbName = function(p, val) {
             if (window.userRole !== 'admin') return;
             const uid = window.currentUser.uid; 
-            
-            // 樂觀更新
-            if (window.globalState && window.currentMatchContext) {
-                let { type, idx1, idx2 } = window.currentMatchContext;
-                let match = (type === 'g_m') ? window.globalState.groups[idx1].matches[idx2] : window.globalState.knockout[idx1].matches[idx2];
-                match[`p${p}`] = val;
-            }
-
             window.runDbTransaction((state) => { 
                 if (state.liveScoreboards && state.liveScoreboards[uid]) state.liveScoreboards[uid][`p${p}`] = val; 
                 if (window.currentMatchContext) {
@@ -1036,15 +1018,6 @@
             if (window.userRole !== 'admin' || !window.currentMatchContext) return;
             const uid = window.currentUser.uid;
             
-            // 因為即時同步已經存了比分，這一步主要是用來標記完賽與關閉計分板
-            if (markComplete && window.globalState) {
-                let { type, idx1, idx2 } = window.currentMatchContext;
-                let match = (type === 'g_m') ? window.globalState.groups[idx1].matches[idx2] : window.globalState.knockout[idx1].matches[idx2];
-                match.isCompleted = true;
-                if (type === 'g_m') window.recalcGroupStats(window.globalState, idx1);
-                if (type === 'k_m') window.advanceMatchWinner(window.globalState, match);
-            }
-
             window.runDbTransaction((state) => {
                 let { type, idx1, idx2 } = window.currentMatchContext;
                 let match = (type === 'g_m') ? state.groups[idx1].matches[idx2] : state.knockout[idx1].matches[idx2];
@@ -1054,18 +1027,15 @@
                     if (type === 'g_m') window.recalcGroupStats(state, idx1);
                     if (type === 'k_m') window.advanceMatchWinner(state, match);
                 }
-                
                 if (state.liveScoreboards && state.liveScoreboards[uid]) delete state.liveScoreboards[uid]; 
             });
             
             window.resetAllAndCloseSbVictory();
-            window.currentTab = 'main';
-            window.syncTabsUI();
-            window.renderApp();
+            window.currentTab = 'main'; window.syncTabsUI(); window.renderApp();
         }
 
         window.cancelSbScoreAndReturn = function() {
-            window.saveSbScoreAndReturn(false); // 直接儲存比分但不標記完賽，並返回主畫面
+            window.saveSbScoreAndReturn(false);
         }
 
         window.resetAllAndCloseSbVictory = function(resetScores = true) {
