@@ -79,11 +79,10 @@
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 0.75rem;
-            margin: 0 4px;
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
             white-space: nowrap;
         }
         .action-btn:hover {
@@ -105,11 +104,13 @@
 
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid var(--border); padding: 6px; text-align: center; }
+        
+        /* 加減分按鈕 */
         .score-ctrl { background: #333; color: white; width: 24px; height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; font-weight: bold; }
         .score-ctrl:active { background: #555; }
 
         .match-row { background: rgba(0, 0, 0, 0.4); border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 8px; }
-        .score-box { display: inline-block; min-width: 30px; height: 30px; line-height: 30px; text-align: center; background: rgba(255,255,255,0.05); border: 1px solid #555; border-radius: 4px; color: var(--gold); font-weight: bold; }
+        .score-box { display: inline-block; min-width: 28px; height: 28px; line-height: 28px; text-align: center; background: rgba(255,255,255,0.05); border: 1px solid #555; border-radius: 4px; color: var(--gold); font-weight: bold; }
 
         .matchup { background: rgba(0,0,0,0.4); border: 1px solid #444; border-radius: 8px; overflow: hidden; }
         .matchup-title { font-size: 0.8em; text-align: center; padding: 4px; background: #222; color: #888; border-bottom: 1px solid #444; }
@@ -160,7 +161,7 @@
         .sb-winner-banner { font-size: clamp(3rem, 8vw, 7rem); font-weight: 900; margin-bottom: 10px; }
         .sb-p1-win .sb-winner-banner { color: var(--sb-p1-color); text-shadow: 0 0 30px var(--sb-p1-color); }
         .sb-p2-win .sb-winner-banner { color: var(--sb-p2-color); text-shadow: 0 0 30px var(--sb-p2-color); }
-        .sb-next-btn { background: transparent; border: 2px solid #fff; color: #fff; padding: 12px 40px; font-size: clamp(1.2rem, 3vw, 2rem); border-radius: 40px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        .sb-next-btn { background: transparent; border: 2px solid #fff; color: #fff; padding: 12px 40px; font-size: clamp(1.2rem, 3vw, 2rem); border-radius: 40px; cursor: pointer; transition: 0.2s; }
         .sb-next-btn:hover { background: #fff; color: #000; }
 
         @media (orientation: portrait) {
@@ -298,7 +299,12 @@
         <div class="sb-victory-screen" id="sb-victory-screen">
             <div class="sb-winner-banner">WINNER</div>
             <div id="sb-winner-name" style="font-size: clamp(1.8rem, 5vw, 4rem); color: #fff; margin-bottom: 20px; font-weight:bold; text-transform:uppercase;"></div>
-            <button class="sb-next-btn" onclick="resetAllAndCloseSbVictory()">關閉 / 下一場</button>
+            
+            <!-- 加入連動儲存按鈕 -->
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="sb-next-btn" style="background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold;" onclick="saveSbScoreAndReturn()">💾 儲存比分並返回賽程</button>
+                <button class="sb-next-btn" style="font-size: 1rem; padding: 12px 20px;" onclick="resetAllAndCloseSbVictory(); switchTab('main')">不儲存</button>
+            </div>
         </div>
     </div>
 
@@ -339,6 +345,7 @@
         window.docRef = null;
         
         window.currentTab = 'main'; // 核心控制狀態 (main 或 score)
+        window.currentMatchContext = null; // 紀錄目前正在計分的賽事資訊，用來自動回填！
         
         let sbScores = { 1: 0, 2: 0 };
         let sbGameOver = false;
@@ -374,9 +381,6 @@
             }, (error) => { showModal("同步錯誤: " + error.message); });
         }
 
-        // ==========================================
-        // 🔒 絕對防錯的 Tab 切換機制 (唯一控制顯示的源頭)
-        // ==========================================
         window.switchTab = function(tabName) {
             window.currentTab = tabName;
             syncTabsUI();
@@ -391,20 +395,14 @@
             if (!btnMain || !btnScore || !appContainer || !scoreScreen) return;
 
             if (window.currentTab === 'main') {
-                // 強制切換按鈕自訂樣式 Class
                 btnMain.className = 'tab-btn tab-active';
                 btnScore.className = 'tab-btn tab-inactive';
-                
-                // 顯示賽程表、完全隱藏計分板 (強制使用 inline style)
                 appContainer.style.display = 'flex';
                 scoreScreen.style.display = 'none';
 
             } else if (window.currentTab === 'score') {
-                // 強制切換按鈕自訂樣式 Class
                 btnScore.className = 'tab-btn tab-active';
                 btnMain.className = 'tab-btn tab-inactive';
-                
-                // 顯示計分板、完全隱藏賽程表 (強制使用 inline style)
                 appContainer.style.display = 'none';
                 scoreScreen.style.display = 'flex';
             }
@@ -415,12 +413,19 @@
                 document.getElementById(s).classList.add('hidden');
             });
             document.getElementById(id).classList.remove('hidden');
-            syncTabsUI(); // 強制對齊畫面狀態
+            syncTabsUI(); 
         }
 
-        window.loadMatchToScoreboard = function(p1, p2) {
+        // ==========================================
+        // 🔄 升級版：載入計分板時「記住」這場比賽
+        // ==========================================
+        window.loadMatchToScoreboard = function(p1, p2, matchType, idx1, idx2) {
             document.getElementById('sb-name-1').value = p1 || 'PLAYER 1';
             document.getElementById('sb-name-2').value = p2 || 'PLAYER 2';
+            
+            // 紀錄這是哪一場比賽，以便稍後儲存
+            window.currentMatchContext = { type: matchType, idx1: idx1, idx2: idx2 };
+            
             resetAllAndCloseSbVictory();
             window.switchTab('score'); 
         }
@@ -456,7 +461,6 @@
             } else { uiInfo.classList.add('hidden'); uiInfo.classList.remove('flex'); document.getElementById('nav-tabs').classList.add('hidden'); }
         }
 
-        // ================= 其他邏輯保持不變 =================
         window.toggleFullScreen = function() {
             const isIPhone = /iPhone/i.test(navigator.userAgent);
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -571,13 +575,18 @@
                         </tr>
                     `).join('');
 
+                    // 💥 帶入 index 引數：讓計分板知道我們正在點擊哪一場
                     let matchesHtml = g.matches.map((m, mIdx) => `
                         <div class="match-row p-2 flex items-center justify-between">
                             <div class="flex-1 text-right truncate pr-2 ${m.p1===window.userRole ? 'text-primary font-bold':''}">${m.p1}</div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1 sm:gap-2">
                                 ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's1', -1)">-</button>` : ''}
                                 <span class="score-box">${m.s1}</span>
-                                ${isAdmin ? `<button class="action-btn" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}')" title="將選手載入電子計分板">⚔️</button>` : `<span class="text-gray-500 text-xs mx-1">VS</span>`}
+                                ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's1', 1)">+</button>` : ''}
+                                
+                                ${isAdmin ? `<button class="action-btn mx-1" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}', 'g_m', ${idx}, ${mIdx})" title="將選手載入電子計分板">⚔️</button>` : `<span class="text-gray-500 text-xs mx-1">VS</span>`}
+                                
+                                ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's2', -1)">-</button>` : ''}
                                 <span class="score-box">${m.s2}</span>
                                 ${isAdmin ? `<button class="score-ctrl" onclick="updateScoreState('g_m', ${idx}, ${mIdx}, 's2', 1)">+</button>` : ''}
                             </div>
@@ -612,7 +621,7 @@
                             <div class="matchup ${styleClass} mb-4 relative">
                                 <div class="matchup-title flex justify-between px-2">
                                     <span>${m.title} ${m.id ? `<span class="text-gray-500">(${m.id})</span>`:''}</span>
-                                    ${isAdmin && m.p1 !== '輪空' && m.p2 !== '輪空' ? `<button class="action-btn" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}')" title="帶入電子計分板">⚔️ 計分</button>` : ''}
+                                    ${isAdmin && m.p1 !== '輪空' && m.p2 !== '輪空' ? `<button class="action-btn" onclick="loadMatchToScoreboard('${m.p1}', '${m.p2}', 'k_m', ${colIdx}, ${mIdx})" title="帶入電子計分板">⚔️ 計分</button>` : ''}
                                 </div>
                                 ${renderPlayerRow('p1', 's1', m.p1Seed)}${renderPlayerRow('p2', 's2', m.p2Seed)}
                             </div>`;
@@ -665,7 +674,9 @@
         window.showModal = function(msg) { document.getElementById('modal-msg').innerText = msg; document.querySelector('#custom-modal button').onclick = closeModal; document.getElementById('custom-modal').classList.remove('hidden'); }
         window.closeModal = function() { document.getElementById('custom-modal').classList.add('hidden'); }
 
-        // ================= 計分板獨立邏輯 =================
+        // ==========================================
+        // ⚔️ 計分板獨立邏輯與「儲存返回」機制
+        // ==========================================
         window.addSbScore = function(p, pts) {
             if (sbGameOver && pts > 0) return;
             sbScores[p] = Math.max(0, sbScores[p] + pts);
@@ -692,6 +703,30 @@
             } else if (sbScores[2] >= target) {
                 sbGameOver = true; document.getElementById('sb-winner-name').innerText = document.getElementById('sb-name-2').value; screen.classList.add('active', 'sb-p2-win');
             }
+        }
+
+        // 💥 終極殺手鐧：將比分存回資料庫，然後回到賽程表
+        window.saveSbScoreAndReturn = function() {
+            if (window.currentMatchContext && window.globalState) {
+                let s = JSON.parse(JSON.stringify(window.globalState));
+                let { type, idx1, idx2 } = window.currentMatchContext;
+
+                // 根據 context 將計分板分數覆蓋回對應的賽事
+                if (type === 'g_m') {
+                    s.groups[idx1].matches[idx2].s1 = sbScores[1];
+                    s.groups[idx1].matches[idx2].s2 = sbScores[2];
+                } else if (type === 'k_m') {
+                    s.knockout[idx1].matches[idx2].s1 = sbScores[1];
+                    s.knockout[idx1].matches[idx2].s2 = sbScores[2];
+                }
+                
+                // 儲存到雲端
+                saveState(s);
+            }
+            
+            // 關閉計分板狀態，並切換回賽程分頁
+            resetAllAndCloseSbVictory();
+            window.switchTab('main');
         }
 
         window.onload = init;
